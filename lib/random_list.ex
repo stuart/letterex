@@ -1,7 +1,18 @@
 defmodule RandomList do
-  def new name, items do
-    Agent.start_link(fn -> {[], items} end, name: name)
+  def new items do
+    {:ok, pid} = Agent.start_link(fn -> {[], items} end)
+    shuffle pid
+    {:ok, pid}
+  end
+  
+  def new items, name do
+    {:ok, pid} = Agent.start_link(fn -> {[], items} end, name: name)
     shuffle name
+    {:ok, pid}
+  end
+
+  def stop name do
+    Agent.stop name
   end
   
   def shuffle name do
@@ -19,8 +30,8 @@ defmodule RandomList do
     Agent.get_and_update name, &(do_get &1)
   end
   
-  # Shuffle once half the items have been used
-  defp do_get({items, used}) when length(items) <= length(used) do
+  # Shuffle once more than half the items have been used
+  defp do_get({items, used}) when length(items) < length(used) do
     do_get do_shuffle({items, used})  
   end
 
