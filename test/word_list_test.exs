@@ -1,18 +1,26 @@
 defmodule WordListTest do
   use ExUnit.Case
-
+  alias Letterex.WordList
+  
   test "can load from file" do
-    {words, used_words} = Agent.get :en_GB, &(&1)
+    {:ok, pid} = WordList.start_link :en_TEST
+    {words, used_words} = Agent.get pid, &(&1)
     assert is_list(words)
     assert is_list(used_words)
   end
   
   test "can look up a score" do
-    assert 17 = WordList.score(:en_GB, "foresail")
+    {:ok, _pid} = WordList.start_link :en_TEST 
+    assert 17 = WordList.score :en_TEST, "yogurt"
   end
   
-  test "gets a random word list" do
-    assert is_binary(RandomList.get :en_GB)
-  end  
+  test "can get a random word" do
+    {:ok, pid} = WordList.start_link :en_TEST
+    word = WordList.get_word pid
+    assert Enum.member? ["chateau", "chateaux", "chatelaine", "chatelaines",
+     "yogurt", "yogurts", "yodeller", "yodelling",
+     "yodellers","yodelled" ], word
+
+  end
 end
   

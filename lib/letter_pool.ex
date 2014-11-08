@@ -1,5 +1,4 @@
-defmodule LetterPool do
-
+defmodule Letterex.LetterPool do
   def new words, min \\ 10 do
     letters = init_letters(words, min)
     Agent.start_link(fn -> %{letters: letters, words: words, min: min} end)
@@ -16,13 +15,15 @@ defmodule LetterPool do
     add_to_pool [], words, min
   end
   
+  # Get a random word and put it's letters into the pool.
+  # This keeps the ratios of letters right.
   defp add_to_pool(pool, words, min) when length(pool) <= min do
-    word = WordList.get_word words
+    word = Letterex.WordList.get_word words
     :random.seed(:os.timestamp)
     add_to_pool Enum.shuffle(pool ++ String.codepoints(word)), words, min
   end
   
-  defp add_to_pool(pool, words, min) do
+  defp add_to_pool(pool, _words, _min) do
     pool
   end
   

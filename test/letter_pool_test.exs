@@ -1,8 +1,10 @@
-defmodule LetterPoolTest do
+defmodule Letterex.LetterPoolTest do
   use ExUnit.Case
+  alias Letterex.LetterPool
   
   setup do
-    {:ok, pid} = LetterPool.new :en_GB
+    Letterex.WordList.start_link(:en_TEST)
+    {:ok, pid} = LetterPool.new :en_TEST
     {:ok, pid: pid} 
   end
   
@@ -17,8 +19,14 @@ defmodule LetterPoolTest do
   
   test "letter reduces the size of the pool by 1", ctx do
     size = LetterPool.size(ctx.pid)
+    if size == 11 do
+      # Extra one because the pool will be re-seeded
+      LetterPool.letter(ctx.pid)
+      size = LetterPool.size(ctx.pid)
+    end
     LetterPool.letter(ctx.pid)
-    assert size - LetterPool.size(ctx.pid) == 1
+    new_size = LetterPool.size(ctx.pid)
+    assert size - new_size == 1
   end
   
   test "pool gets reseeded once letters have been removed", ctx do

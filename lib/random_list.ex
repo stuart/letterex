@@ -1,14 +1,6 @@
-defmodule RandomList do
-  def new items do
-    {:ok, pid} = Agent.start_link(fn -> {[], items} end)
-    shuffle pid
-    {:ok, pid}
-  end
-  
-  def new items, name do
-    {:ok, pid} = Agent.start_link(fn -> {[], items} end, name: name)
-    shuffle name
-    {:ok, pid}
+defmodule Letterex.RandomList do
+  def start_link items, options \\ [] do
+    Agent.start_link fn -> do_shuffle {[], items} end, options
   end
 
   def stop name do

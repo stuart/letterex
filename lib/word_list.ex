@@ -1,17 +1,17 @@
-defmodule WordList do  
-  # Stores the wordlist in an ets table and creates a random word list
-  # The local is used as a tid for the table and a name for the
-  # random word list Agent.
-  def new locale do
-    :ets.new locale, [:set, :named_table ]
+defmodule Letterex.WordList do
+
+  def start_link locale do
     words = load locale
-    :ets.insert locale, words
-    random_word_list(words, :"#{locale}")
+    setup_ets_table locale, words
+    {:ok, pid} = random_word_list words
+    Process.register(pid, locale)
+    {:ok, pid}
   end
   
+  # Returns the score associated with a word
   def score locale, word do
     case :ets.lookup(locale, word) do
-      [{word, score}] -> score
+      [{_, score}] -> score
       _ -> -String.length(word) * 2
     end
   end
@@ -21,7 +21,7 @@ defmodule WordList do
   end
   
   defp load_from_file file do
-    stream = File.stream!(file) |>
+    File.stream!(file) |>
       Enum.map(fn(line) -> 
         [word, score] = String.split(line)
         {score, _} = Integer.parse(score)
@@ -30,11 +30,21 @@ defmodule WordList do
       ) 
   end
 
-  def random_word_list words, name do
-    RandomList.new Enum.map(words, fn({word, score})-> word end), name
+  defp setup_ets_table locale, words do
+    case :ets.info(locale) do
+      :undefined -> 
+        :ets.new locale, [:set, :named_table ]
+        :ets.insert locale, words
+      _ -> 
+        {:error, :already_started}
+    end
   end
   
-  def get_word name do
-    RandomList.get name
+  def random_word_list words do
+    Letterex.RandomList.start_link Enum.map(words, fn({word, _})-> word end)
+  end
+  
+  def get_word pid do
+    Letterex.RandomList.get pid
   end
 end
