@@ -12,9 +12,19 @@ defmodule Letterex.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger]]
+    [ mod: {Letterex, args(Mix.env)},
+      env: [],
+      applications: [:logger]]
   end
-
+  
+  def args :test do
+    [:en_TEST]
+  end
+  
+  def args _ do
+    [:en_GB, :en_US]
+  end
+  
   # Dependencies can be Hex packages:
   #
   #   {:mydep, "~> 0.3.0"}

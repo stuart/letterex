@@ -1,10 +1,14 @@
 defmodule Letterex.WordList do
-
+  require Logger
+  
   def start_link locale do
+    Logger.info "Starting WordList: #{locale}"
     words = load locale
+    Logger.info "#{length(words)} words in dictionary."
     setup_ets_table locale, words
     {:ok, pid} = random_word_list words
     Process.register(pid, locale)
+    Logger.info "RandomWordList registered as: #{locale}"
     {:ok, pid}
   end
   
@@ -32,7 +36,8 @@ defmodule Letterex.WordList do
 
   defp setup_ets_table locale, words do
     case :ets.info(locale) do
-      :undefined -> 
+      :undefined ->
+        Logger.info "Setting up ETS table: #{locale}" 
         :ets.new locale, [:set, :named_table ]
         :ets.insert locale, words
       _ -> 

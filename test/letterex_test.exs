@@ -1,7 +1,7 @@
 defmodule LetterexTest do
   use ExUnit.Case
 
-  test "the truth" do
-    assert 1 + 1 == 2
+  test "the application is started" do
+    assert :ok = Application.ensure_started(:letterex)
   end
 end

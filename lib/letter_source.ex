@@ -1,5 +1,5 @@
-defmodule Letterex.LetterPool do
-  def new words, min \\ 10 do
+defmodule Letterex.LetterSource do
+  def start_link words, min \\ 10 do
     letters = init_letters(words, min)
     Agent.start_link(fn -> %{letters: letters, words: words, min: min} end)
   end

@@ -3,7 +3,7 @@ defmodule Letterex.BoardTest do
   alias Letterex.Board
   
   setup do
-    {:ok, board} = Board.new
+    {:ok, board} = Board.start_link
     {:ok, board: board }
   end
   

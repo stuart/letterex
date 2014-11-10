@@ -5,7 +5,7 @@ defmodule Letterex.Board do
 
   defstruct letters: HashDict.new, free_spaces: []
   
-  def new do
+  def start_link do
     Agent.start_link fn() -> %Letterex.Board{free_spaces: new_free_spaces} end
   end
   
